@@ -24,7 +24,10 @@ package org.jetbrains.kotlinx.lincheck.strategy.randomswitch;
 
 import org.jetbrains.kotlinx.lincheck.CTestConfiguration;
 import org.jetbrains.kotlinx.lincheck.execution.ExecutionGenerator;
+import org.jetbrains.kotlinx.lincheck.execution.ExecutionScenario;
 import org.jetbrains.kotlinx.lincheck.verifier.Verifier;
+
+import java.util.List;
 
 /**
  * Configuration for {@link RandomSwitchStrategy random-switch} strategy.
@@ -35,11 +38,11 @@ public class RandomSwitchCTestConfiguration extends CTestConfiguration {
 
     public RandomSwitchCTestConfiguration(Class<?> testClass, int iterations, int threads, int actorsPerThread, int actorsBefore,
         int actorsAfter, Class<? extends ExecutionGenerator> generatorClass, Class<? extends Verifier> verifierClass,
-        int invocationsPerIteration, boolean requireStateEquivalenceCheck, boolean minimizeFailedScenario,
+        List<ExecutionScenario> customScenarios, int invocationsPerIteration, boolean requireStateEquivalenceCheck, boolean minimizeFailedScenario,
         Class<?> sequentialSpecification)
     {
         super(testClass, iterations, threads, actorsPerThread, actorsBefore, actorsAfter, generatorClass, verifierClass,
-                requireStateEquivalenceCheck, minimizeFailedScenario, sequentialSpecification);
+                customScenarios, requireStateEquivalenceCheck, minimizeFailedScenario, sequentialSpecification);
         this.invocationsPerIteration = invocationsPerIteration;
     }
 }

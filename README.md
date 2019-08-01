@@ -24,6 +24,7 @@ Table of contents
          * [Calling at most once](#calling-at-most-once)
          * [Exception as a result](#exception-as-a-result)
          * [Operation groups](#operation-groups)
+         * [Custom predefined scenarios](#custom-predefined-scenarios)
       * [Parameter generators](#parameter-generators)
          * [Binding parameter and generator names](#binding-parameter-and-generator-names)
       * [Sequential specification](#sequential-specification)
@@ -91,6 +92,29 @@ public class SPMCQueueTest {
 ```
 
 > A generator for `x` parameter is omitted and the default is used. See [Default generators](#default-generators) paragraph for details.
+
+### Custom predefined scenarios
+In case of more complex data structure restrictions on execution scenarios it is possible to generate custom scenarios via Kotlin DSL and run a check on customs scenarios adding them via `Options.addCustomScenario(ExecutionScenario)` (see [Configuration via options](#configuration-via-options) for details).
+
+Custom scenario generation in Kotlin can be done as follows:
+```kotlin
+scenario {
+  initial {
+    operation(SPMCQueueTest::offer, 1)
+    operation(SPMCQueueTest::offer, 2)
+  }
+  parallel {
+    thread {
+      elements.forEach { operation(SPMCQueueTest::offer, it) }
+    }
+    thread {
+      repeat(5) {
+        operation(SPMCQueueTest::poll)
+      }
+    }
+  }
+}
+```
 
 ## Parameter generators
 If an operation has parameters then generators should be specified for each of them. There are several ways to specify a parameter generator: explicitly on parameter via `@Param(gen = ..., conf = ...)` annotation, using named generator via `@Param(name = ...)` annotation, or using the default generator implicitly.
@@ -365,7 +389,6 @@ public class MyConcurrentTest {
   }
 }
 ```
-
 
 # Sample
 Here is a test for a not thread-safe `HashMap` with its result. It uses the default configuration and tests `put` and `get` operations only:

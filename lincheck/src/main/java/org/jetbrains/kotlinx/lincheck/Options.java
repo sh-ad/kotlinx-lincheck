@@ -27,6 +27,8 @@ import org.jetbrains.kotlinx.lincheck.execution.ExecutionGenerator;
 import org.jetbrains.kotlinx.lincheck.execution.ExecutionScenario;
 import org.jetbrains.kotlinx.lincheck.verifier.Verifier;
 
+import java.util.List;
+
 import static org.jetbrains.kotlinx.lincheck.ReporterKt.DEFAULT_LOG_LEVEL;
 
 /**
@@ -41,6 +43,7 @@ public abstract class Options<OPT extends Options, CTEST extends CTestConfigurat
     protected int actorsAfter = CTestConfiguration.DEFAULT_ACTORS_AFTER;
     protected Class<? extends ExecutionGenerator> executionGenerator = CTestConfiguration.DEFAULT_EXECUTION_GENERATOR;
     protected Class<? extends Verifier> verifier = CTestConfiguration.DEFAULT_VERIFIER;
+    protected List<ExecutionScenario> customScenarios = CTestConfiguration.DEFAULT_CUSTOM_SCENARIOS;
     protected boolean requireStateEquivalenceImplementationCheck = true;
     protected boolean minimizeFailedScenario = CTestConfiguration.DEFAULT_MINIMIZE_ERROR;
     protected Class<?> sequentialSpecification = null;
@@ -165,4 +168,12 @@ public abstract class Options<OPT extends Options, CTEST extends CTestConfigurat
         return (OPT) this;
     }
 
+
+    /**
+     * Add custom scenario to be checked instead of generated scenarios
+     */
+    public OPT addCustomScenario(ExecutionScenario scenario) {
+        customScenarios.add(scenario);
+        return (OPT) this;
+    }
 }

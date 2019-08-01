@@ -24,9 +24,9 @@ package org.jetbrains.kotlinx.lincheck.test.verifier
 import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.execution.*
 import org.jetbrains.kotlinx.lincheck.verifier.*
-import java.lang.IllegalStateException
+
+import org.jetbrains.kotlinx.lincheck.verifier.actor as actor
 import kotlin.reflect.KFunction
-import kotlin.reflect.jvm.javaMethod
 
 /**
  * Kotlin DSL for defining custom scenarios and corresponding expected results.
@@ -36,15 +36,15 @@ import kotlin.reflect.jvm.javaMethod
  * ```
  * verify(CustomTest::class.java, LinearizabilityVerifier::class.java, {
  *   initial {
- *     operation(actor(::offer, 1), ValueResult(true))
- *     operation(actor(::offer, 2), ValueResult(true))
+ *     operation(actor(CustomTest::offer, 1), ValueResult(true))
+ *     operation(actor(CustomTest::offer, 2), ValueResult(true))
  *   }
  *   parallel {
  *     thread {
- *       operation(actor(::r), ValueResult(2))
+ *       operation(actor(CustomTest::r), ValueResult(2))
  *     }
  *     thread {
- *       operation(actor(::r), ValueResult(1))
+ *       operation(actor(CustomTest::r), ValueResult(1))
  *     }
  *   }
  * }, expected = true)
@@ -54,7 +54,7 @@ import kotlin.reflect.jvm.javaMethod
 fun verify(
     testClass: Class<*>,
     verifierClass: Class<out Verifier>,
-    block: ExecutionBuilder.() -> Unit,
+    block: DSLExecutionBuilder.() -> Unit,
     correct: Boolean
 ) {
     val (scenario, results) = scenarioWithResults(block)
@@ -64,51 +64,49 @@ fun verify(
     assert(res == correct)
 }
 
-fun scenarioWithResults(
-    block: ExecutionBuilder.() -> Unit
-): Pair<ExecutionScenario, ExecutionResult> = ExecutionBuilder().apply(block).buildScenarioWithResults()
+fun actor(f: KFunction<*>, vararg args: Any?): Actor =
+        actor(f, *args)
 
-fun actor(function: KFunction<*>, vararg args: Any?, cancelOnSuspension: Boolean = false): Actor {
-    val method = function.javaMethod
-        ?: throw IllegalStateException("The function is a constructor or cannot be represented by a Java Method")
-    require(method.exceptionTypes.all { Throwable::class.java.isAssignableFrom(it) }) { "Not all declared exceptions are Throwable" }
-    return Actor(
-        method = method,
-        arguments = args.toList(),
-        handledExceptions = (method.exceptionTypes as Array<Class<out Throwable>>).toList(),
-        cancelOnSuspension = cancelOnSuspension
-    )
-}
+fun scenarioWithResults(
+    block: DSLExecutionBuilder.() -> Unit
+): Pair<ExecutionScenario, ExecutionResult> = DSLExecutionBuilder().apply(block).buildScenarioWithResults()
 
 data class Operation(val actor: Actor, val result: Result)
 
-class ThreadExecution : ArrayList<Operation>() {
+@DslMarker
+private annotation class ExecutionDSLMarker
+
+@ExecutionDSLMarker
+class DSLThreadExecution : ArrayList<Operation>() {
+
     fun operation(actor: Actor, result: Result) {
         add(Operation(actor, result))
     }
 }
 
-class ParallelExecution : ArrayList<ThreadExecution>() {
-    fun thread(block: ThreadExecution.() -> Unit) {
-        add(ThreadExecution().apply(block))
+@ExecutionDSLMarker
+class DSLParallelExecution : ArrayList<DSLThreadExecution>() {
+    fun thread(block: DSLThreadExecution.() -> Unit) {
+        add(DSLThreadExecution().apply(block))
     }
 }
 
-class ExecutionBuilder {
+@ExecutionDSLMarker
+class DSLExecutionBuilder {
     private val initial = mutableListOf<Operation>()
     private var parallel = mutableListOf<MutableList<Operation>>()
     private val post = mutableListOf<Operation>()
 
-    fun initial(block: ThreadExecution.() -> Unit) {
-        initial.addAll(ThreadExecution().apply(block))
+    fun initial(block: DSLThreadExecution.() -> Unit) {
+        initial.addAll(DSLThreadExecution().apply(block))
     }
 
-    fun parallel(block: ParallelExecution.() -> Unit) {
-        parallel.addAll(ParallelExecution().apply(block))
+    fun parallel(block: DSLParallelExecution.() -> Unit) {
+        parallel.addAll(DSLParallelExecution().apply(block))
     }
 
-    fun post(block: ThreadExecution.() -> Unit) {
-        post.addAll(ThreadExecution().apply(block))
+    fun post(block: DSLThreadExecution.() -> Unit) {
+        post.addAll(DSLThreadExecution().apply(block))
     }
 
     fun buildScenarioWithResults(): Pair<ExecutionScenario, ExecutionResult> {

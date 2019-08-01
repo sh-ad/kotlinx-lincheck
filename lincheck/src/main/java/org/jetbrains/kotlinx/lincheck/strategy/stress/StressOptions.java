@@ -52,7 +52,7 @@ public class StressOptions extends Options<StressOptions, StressCTestConfigurati
     @Override
     public StressCTestConfiguration createTestConfigurations(Class<?> testClass) {
         return new StressCTestConfiguration(testClass, iterations, threads, actorsPerThread, actorsBefore, actorsAfter, executionGenerator,
-                verifier, invocationsPerIteration, addWaits, requireStateEquivalenceImplementationCheck, minimizeFailedScenario,
+                verifier, customScenarios, invocationsPerIteration, addWaits, requireStateEquivalenceImplementationCheck, minimizeFailedScenario,
                 chooseSequentialSpecification(sequentialSpecification, testClass));
     }
 }

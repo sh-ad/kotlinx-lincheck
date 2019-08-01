@@ -43,7 +43,7 @@ public class RandomSwitchOptions extends Options<RandomSwitchOptions, RandomSwit
     @Override
     public RandomSwitchCTestConfiguration createTestConfigurations(Class<?> testClass) {
         return new RandomSwitchCTestConfiguration(testClass, iterations, threads, actorsPerThread, actorsBefore, actorsAfter,
-            executionGenerator, verifier, invocationsPerIteration, requireStateEquivalenceImplementationCheck, minimizeFailedScenario,
+            executionGenerator, verifier, customScenarios, invocationsPerIteration, requireStateEquivalenceImplementationCheck, minimizeFailedScenario,
             chooseSequentialSpecification(sequentialSpecification, testClass));
     }
 }
