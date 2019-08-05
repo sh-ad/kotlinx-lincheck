@@ -13,14 +13,14 @@ class LockFreeSetTest {
         val scenario = scenario {
             parallel {
                 thread {
-                    operation(LockFreeSet::snapshot)
+                    actor(LockFreeSet::snapshot)
                 }
 
                 thread {
                     repeat(2) {
                         for (key in 1..2) {
-                            operation(LockFreeSet::add, key)
-                            operation(LockFreeSet::remove, key)
+                            actor(LockFreeSet::add, key)
+                            actor(LockFreeSet::remove, key)
                         }
                     }
                 }

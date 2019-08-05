@@ -34,15 +34,15 @@ import kotlin.reflect.jvm.javaMethod
  * ```
  * scenario {
  *   initial {
- *     operation(CustomTest::offer, 1)
- *     operation(CustomTest::offer, 2)
+ *     actor(CustomTest::offer, 1)
+ *     actor(CustomTest::offer, 2)
  *   }
  *   parallel {
  *     thread {
- *       operation(CustomTest::poll)
+ *       actor(CustomTest::poll)
  *     }
  *     thread {
- *       operation(CustomTest::poll)
+ *       actor(CustomTest::poll)
  *     }
  *   }
  * }
@@ -58,7 +58,7 @@ fun scenario(block: DSLScenarioBuilder.() -> Unit): ExecutionScenario =
 /**
  * Create an actor from a function [f] and its arguments [args]
  */
-fun actor(f: KFunction<*>, vararg args: Any?): Actor {
+internal fun actor(f: KFunction<*>, vararg args: Any?): Actor {
     val method = f.javaMethod
         ?: throw IllegalStateException("The function is a constructor or cannot be represented by a Java Method")
     require(method.exceptionTypes.all { Throwable::class.java.isAssignableFrom(it) }) { "Not all declared exceptions are Throwable" }
@@ -72,17 +72,17 @@ fun actor(f: KFunction<*>, vararg args: Any?): Actor {
 @ScenarioDSLMarker
 class DSLThreadScenario : ArrayList<Actor>() {
     /**
-     * An operation to be executed
+     * An actor to be executed
      */
-    fun operation(f: KFunction<*>, vararg args: Any?) {
-        add(actor(f, *args))
+    fun actor(f: KFunction<*>, vararg args: Any?) {
+        add(org.jetbrains.kotlinx.lincheck.actor(f, *args))
     }
 }
 
 @ScenarioDSLMarker
 class DSLParallelScenario : ArrayList<DSLThreadScenario>() {
     /**
-     * Define a sequence of operations to be executed in a separate thread
+     * Define a sequence of actors to be executed in a separate thread
      */
     fun thread(block: DSLThreadScenario.() -> Unit) {
         add(DSLThreadScenario().apply(block))

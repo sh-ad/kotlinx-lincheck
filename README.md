@@ -100,16 +100,16 @@ Custom scenario generation in Kotlin can be done as follows:
 ```kotlin
 scenario {
   initial {
-    operation(SPMCQueueTest::offer, 1)
-    operation(SPMCQueueTest::offer, 2)
+    actor(SPMCQueue::offer, 1)
+    actor(SPMCQueue::offer, 2)
   }
   parallel {
     thread {
-      elements.forEach { operation(SPMCQueueTest::offer, it) }
+      elements.forEach { actor(SPMCQueue::offer, it) }
     }
     thread {
       repeat(5) {
-        operation(SPMCQueueTest::poll)
+        actor(SPMCQueue::poll)
       }
     }
   }

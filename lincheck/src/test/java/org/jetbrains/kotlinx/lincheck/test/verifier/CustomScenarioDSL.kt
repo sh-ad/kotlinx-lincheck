@@ -64,9 +64,6 @@ fun verify(
     assert(res == correct)
 }
 
-fun actor(f: KFunction<*>, vararg args: Any?): Actor =
-        actor(f, *args)
-
 fun scenarioWithResults(
     block: DSLExecutionBuilder.() -> Unit
 ): Pair<ExecutionScenario, ExecutionResult> = DSLExecutionBuilder().apply(block).buildScenarioWithResults()
