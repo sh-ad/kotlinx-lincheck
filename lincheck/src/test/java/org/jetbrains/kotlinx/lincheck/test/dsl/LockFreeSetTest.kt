@@ -31,6 +31,7 @@ class LockFreeSetTest {
                 .verifier(LinearizabilityVerifier::class.java)
                 .addCustomScenario(scenario)
                 .invocationsPerIteration(100000)
+                .requireStateEquivalenceImplCheck(false)
 
         LinChecker.check(LockFreeSet::class.java, options)
     }
