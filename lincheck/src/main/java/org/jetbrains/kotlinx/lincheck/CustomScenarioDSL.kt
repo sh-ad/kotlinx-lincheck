@@ -19,9 +19,8 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * #L%
  */
-package org.jetbrains.kotlinx.lincheck.verifier
+package org.jetbrains.kotlinx.lincheck
 
-import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.execution.*
 import java.lang.IllegalStateException
 import kotlin.reflect.KFunction

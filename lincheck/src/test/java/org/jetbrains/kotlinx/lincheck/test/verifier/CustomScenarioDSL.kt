@@ -25,7 +25,7 @@ import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.execution.*
 import org.jetbrains.kotlinx.lincheck.verifier.*
 
-import org.jetbrains.kotlinx.lincheck.verifier.actor as actor
+import org.jetbrains.kotlinx.lincheck.actor as actor
 import kotlin.reflect.KFunction
 
 /**
