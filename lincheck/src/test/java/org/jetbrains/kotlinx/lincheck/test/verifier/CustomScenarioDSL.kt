@@ -25,9 +25,6 @@ import org.jetbrains.kotlinx.lincheck.*
 import org.jetbrains.kotlinx.lincheck.execution.*
 import org.jetbrains.kotlinx.lincheck.verifier.*
 
-import org.jetbrains.kotlinx.lincheck.actor as actor
-import kotlin.reflect.KFunction
-
 /**
  * Kotlin DSL for defining custom scenarios and corresponding expected results.
  * Useful to test special corner cases.
