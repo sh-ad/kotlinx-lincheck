@@ -30,7 +30,7 @@ class LockFreeSetTest {
         val options = StressOptions()
                 .verifier(LinearizabilityVerifier::class.java)
                 .addCustomScenario(scenario)
-                .invocationsPerIteration(100000)
+                .invocationsPerIteration(1000000)
                 .requireStateEquivalenceImplCheck(false)
 
         LinChecker.check(LockFreeSet::class.java, options)

@@ -62,7 +62,7 @@ class FailedScenarioMinimizationTest: VerifierState() {
 
     @Test
     fun testWithMinimization() {
-        val options = StressOptions().actorsPerThread(15) // minimizeFailedScenario == true by default
+        val options = StressOptions().actorsPerThread(15).invocationsPerIteration(100000) // minimizeFailedScenario == true by default
         try {
             LinChecker.check(FailedScenarioMinimizationTest::class.java, options)
             fail("Should fail with AssertionError")
