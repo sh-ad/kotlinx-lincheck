@@ -390,6 +390,7 @@ public class MyConcurrentTest {
 }
 ```
 
+
 # Sample
 Here is a test for a not thread-safe `HashMap` with its result. It uses the default configuration and tests `put` and `get` operations only:
 

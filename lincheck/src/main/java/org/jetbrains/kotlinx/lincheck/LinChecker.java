@@ -168,6 +168,7 @@ public class LinChecker {
     }
 
     private void runScenario(ExecutionScenario scenario, CTestConfiguration testCfg) throws AssertionError, Exception {
+        // Check correctness of the generated scenario
         validateScenario(testCfg, scenario);
         Verifier verifier = createVerifier(testCfg.verifierClass, scenario, testCfg.sequentialSpecification);
         if (testCfg.requireStateEquivalenceImplCheck) verifier.checkStateEquivalenceImplementation();
