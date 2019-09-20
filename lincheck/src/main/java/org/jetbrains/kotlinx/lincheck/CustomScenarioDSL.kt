@@ -94,11 +94,17 @@ class DSLScenarioBuilder {
     private val initial = mutableListOf<Actor>()
     private var parallel = mutableListOf<MutableList<Actor>>()
     private val post = mutableListOf<Actor>()
+    private var wasInitial = false
+    private var wasParallel = false
+    private var wasPost = false
 
     /**
      * Define initial part of the execution
      */
     fun initial(block: DSLThreadScenario.() -> Unit) {
+        require(!wasInitial) { "Redeclaration of initial part is prohibited." }
+        wasInitial = true
+
         initial.addAll(DSLThreadScenario().apply(block))
     }
 
@@ -106,6 +112,9 @@ class DSLScenarioBuilder {
      * Define parallel part of the execution
      */
     fun parallel(block: DSLParallelScenario.() -> Unit) {
+        require(!wasParallel) { "Redeclaration of parallel part is prohibited." }
+        wasParallel = true
+
         parallel.addAll(DSLParallelScenario().apply(block))
     }
 
@@ -113,6 +122,9 @@ class DSLScenarioBuilder {
      * Define post part of the execution
      */
     fun post(block: DSLThreadScenario.() -> Unit) {
+        require(!wasPost) { "Redeclaration of post part is prohibited." }
+        wasPost = true
+
         post.addAll(DSLThreadScenario().apply(block))
     }
 
