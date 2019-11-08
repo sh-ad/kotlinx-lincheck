@@ -24,7 +24,7 @@ Table of contents
          * [Calling at most once](#calling-at-most-once)
          * [Exception as a result](#exception-as-a-result)
          * [Operation groups](#operation-groups)
-         * [Custom predefined scenarios](#custom-predefined-scenarios)
+         * [Custom scenarios](#custom-scenarios)
       * [Parameter generators](#parameter-generators)
          * [Binding parameter and generator names](#binding-parameter-and-generator-names)
       * [Sequential specification](#sequential-specification)
@@ -93,8 +93,8 @@ public class SPMCQueueTest {
 
 > A generator for `x` parameter is omitted and the default is used. See [Default generators](#default-generators) paragraph for details.
 
-### Custom predefined scenarios
-In case of more complex data structure restrictions on execution scenarios it is possible to generate custom scenarios via Kotlin DSL and run a check on customs scenarios adding them via `Options.addCustomScenario(ExecutionScenario)` (see [Configuration via options](#configuration-via-options) for details).
+### Custom scenarios
+To to test corner cases it is possible to generate custom scenarios via Kotlin DSL and run a check on them, adding to options them via `Options.addCustomScenario(ExecutionScenario)` (see [Configuration via options](#configuration-via-options) for details). If they are defined, then `LinChecker.check` will not generate any scenarios and instead will just check the given ones.
 
 Custom scenario generation in Kotlin can be done as follows:
 ```kotlin
