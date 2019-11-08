@@ -45,7 +45,7 @@ public abstract class Options<OPT extends Options, CTEST extends CTestConfigurat
     protected int actorsAfter = CTestConfiguration.DEFAULT_ACTORS_AFTER;
     protected Class<? extends ExecutionGenerator> executionGenerator = CTestConfiguration.DEFAULT_EXECUTION_GENERATOR;
     protected Class<? extends Verifier> verifier = CTestConfiguration.DEFAULT_VERIFIER;
-    protected List<ExecutionScenario> customScenarios = Collections.emptyList();
+    protected List<ExecutionScenario> customScenarios = new ArrayList<>();
     protected boolean requireStateEquivalenceImplementationCheck = true;
     protected boolean minimizeFailedScenario = CTestConfiguration.DEFAULT_MINIMIZE_ERROR;
     protected Class<?> sequentialSpecification = null;

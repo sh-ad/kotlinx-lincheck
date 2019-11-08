@@ -23,6 +23,7 @@ package org.jetbrains.kotlinx.lincheck.test.verifier.linearizability
 
 import org.jetbrains.kotlinx.lincheck.Suspended
 import org.jetbrains.kotlinx.lincheck.ValueResult
+import org.jetbrains.kotlinx.lincheck.actor
 import org.jetbrains.kotlinx.lincheck.test.verifier.*
 import org.jetbrains.kotlinx.lincheck.verifier.linearizability.LinearizabilityVerifier
 import org.junit.Test

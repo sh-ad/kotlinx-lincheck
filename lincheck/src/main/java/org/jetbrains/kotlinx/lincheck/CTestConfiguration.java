@@ -64,16 +64,13 @@ public abstract class CTestConfiguration {
     public final Class<? extends ExecutionGenerator> generatorClass;
     public final Class<? extends Verifier> verifierClass;
     public List<ExecutionScenario> customScenarios;
-
     public final boolean requireStateEquivalenceImplCheck;
     public final Boolean minimizeFailedScenario;
     public final Class<?> sequentialSpecification;
 
     protected CTestConfiguration(Class<?> testClass, int iterations, int threads, int actorsPerThread, int actorsBefore, int actorsAfter,
-        Class<? extends ExecutionGenerator> generatorClass, Class<? extends Verifier> verifierClass,
+        Class<? extends ExecutionGenerator> generatorClass, Class<? extends Verifier> verifierClass,  List<ExecutionScenario> customScenarios,
         boolean requireStateEquivalenceImplCheck, boolean minimizeFailedScenario, Class<?> sequentialSpecification)
-    protected CTestConfiguration(int iterations, int threads, int actorsPerThread, int actorsBefore, int actorsAfter,
-        Class<? extends ExecutionGenerator> generatorClass, Class<? extends Verifier> verifierClass, List<ExecutionScenario> customScenarios)
     {
         this.testClass = testClass;
         this.iterations = iterations;

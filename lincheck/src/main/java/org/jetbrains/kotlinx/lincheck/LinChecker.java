@@ -94,8 +94,10 @@ public class LinChecker {
 
     private void checkImpl(CTestConfiguration testCfg) throws AssertionError, Exception {
         if (!testCfg.customScenarios.isEmpty()) {
-            for (ExecutionScenario customScenario : testCfg.customScenarios) {
-                checkScenario(customScenario, testCfg, 1);
+            for (int iteration = 1; iteration <= testCfg.customScenarios.size(); iteration++) {
+                ExecutionScenario customScenario = testCfg.customScenarios.get(iteration - 1);
+                reporter.logIteration(iteration, testCfg.customScenarios.size(), customScenario);
+                runScenario(customScenario, testCfg);
             }
             return;
         }
