@@ -95,4 +95,7 @@ public @interface Operation {
      * is ignored if {@link #cancellableOnSuspension} is {@code false}.
      */
     boolean promptCancellation() default false;
+
+
+    boolean separateOperationThread() default false;
 }

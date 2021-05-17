@@ -39,7 +39,8 @@ class ActorGenerator(
     private val allowExtraSuspension: Boolean,
     private val blocking: Boolean,
     private val causesBlocking: Boolean,
-    promptCancellation: Boolean
+    promptCancellation: Boolean,
+    private val separateOperationThread: Boolean
 ) {
     private val cancellableOnSuspension = cancellableOnSuspension && isSuspendable
     private val promptCancellation = cancellableOnSuspension && promptCancellation
@@ -58,12 +59,15 @@ class ActorGenerator(
             allowExtraSuspension = allowExtraSuspension,
             blocking = blocking,
             causesBlocking = causesBlocking,
-            promptCancellation = promptCancellation
+            promptCancellation = promptCancellation,
+            separateOperationThread = separateOperationThread
         )
     }
 
     val isSuspendable: Boolean get() = method.isSuspendable()
     override fun toString() = method.toString()
+
+    val isSeparateOperationThread: Boolean get() = this.separateOperationThread
 }
 
 private val DETERMINISTIC_RANDOM = Random(42)

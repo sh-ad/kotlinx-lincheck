@@ -119,7 +119,7 @@ public class CTestStructure {
                 List<Class<? extends Throwable>> handledExceptions = Arrays.asList(opAnn.handleExceptionsAsResult());
                 ActorGenerator actorGenerator = new ActorGenerator(m, gens, handledExceptions, opAnn.runOnce(),
                     opAnn.cancellableOnSuspension(), opAnn.allowExtraSuspension(), opAnn.blocking(), opAnn.causesBlocking(),
-                    opAnn.promptCancellation());
+                    opAnn.promptCancellation(), opAnn.separateOperationThread());
                 actorGenerators.add(actorGenerator);
                 // Get list of groups and add this operation to specified ones
                 String opGroup = opAnn.group();

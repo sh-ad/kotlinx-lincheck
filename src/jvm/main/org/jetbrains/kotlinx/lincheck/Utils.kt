@@ -247,7 +247,8 @@ internal fun ExecutionScenario.convertForLoader(loader: ClassLoader) = Execution
                 blocking = a.blocking,
                 causesBlocking = a.causesBlocking,
                 promptCancellation = a.promptCancellation,
-                isSuspendable = a.isSuspendable
+                isSuspendable = a.isSuspendable,
+                separateOperationThread = a.separateOperationThread
             )
         }
     },
