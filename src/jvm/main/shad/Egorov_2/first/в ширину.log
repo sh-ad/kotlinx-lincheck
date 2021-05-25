@@ -1,0 +1,79 @@
+= The execution has hung, see the thread dump =
+Execution scenario (parallel part):
+| remove(0) | remove(-4) | add(-4) |
+|           | add(7)     | add(0)  |
+
+Thread-0:
+	jdk.internal.misc.Unsafe.park(Native Method)
+	java.util.concurrent.locks.LockSupport.park(LockSupport.java:323)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor.getTask(FixedActiveThreadsExecutor.kt:181)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor.access$getTask(FixedActiveThreadsExecutor.kt:40)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:158)
+	java.lang.Thread.run(Thread.java:834)
+Thread-1:
+	java.lang.Thread.dumpThreads(Native Method)
+	java.lang.Thread.getAllStackTraces(Thread.java:1657)
+	org.jetbrains.kotlinx.lincheck.UtilsKt.collectThreadDump(Utils.kt:305)
+	org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedStrategy.checkLiveLockHappened(ManagedStrategy.kt:265)
+	org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedStrategy.newSwitchPoint(ManagedStrategy.kt:294)
+	org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedStrategy.beforeAtomicMethodCall$lincheck(ManagedStrategy.kt:436)
+	shad.Egorov_2.first.LockFreeSet.find(LockFreeSet.kt:99)
+	shad.Egorov_2.first.LockFreeSet.add(LockFreeSet.kt:29)
+	shad.LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21)
+	org.jetbrains.kotlinx.lincheck.runner.TestThreadExecution303.run(Unknown Source)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:163)
+	java.lang.Thread.run(Thread.java:834)
+Thread-2:
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor.getTask(FixedActiveThreadsExecutor.kt:231)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor.access$getTask(FixedActiveThreadsExecutor.kt:40)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:158)
+	java.lang.Thread.run(Thread.java:834)
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                      |                                                                                                                | add(-4)              |
+|                      |                                                                                                                | add(0)               |
+|                      |                                                                                                                |   thread is finished |
+|                      | remove(-4)                                                                                                     |                      |
+|                      |   remove(-4): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)                            |                      |
+|                      |     find(-4): Pair@1 at LockFreeSet.remove(LockFreeSet.kt:43)                                                  |                      |
+|                      |     getReference(): Node@1 at LockFreeSet.remove(LockFreeSet.kt:48)                                            |                      |
+|                      |     compareAndSet(Node@1,Node@1,false,true): true at LockFreeSet.remove(LockFreeSet.kt:49)                     |                      |
+|                      |     physicallyRemove(Node@2,Node@3) at LockFreeSet.remove(LockFreeSet.kt:50)                                   |                      |
+|                      |       getReference(): Node@1 at LockFreeSet.physicallyRemove(LockFreeSet.kt:112)                               |                      |
+|                      |       isRemoved(Node@1): false at LockFreeSet.physicallyRemove(LockFreeSet.kt:113)                             |                      |
+|                      |       switch                                                                                                   |                      |
+| remove(0)            |                                                                                                                |                      |
+|   thread is finished |                                                                                                                |                      |
+|                      |       compareAndSet(Node@3,Node@1,false,false): true at LockFreeSet.physicallyRemove(LockFreeSet.kt:115)       |                      |
+|                      | add(7)                                                                                                         |                      |
+|                      |   add(7): threw ForcibleExecutionFinishException at LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21) |                      |
+|                      |     <init>(null,false) at LockFreeSet.add(LockFreeSet.kt:26)                                                   |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |
+|                      |     find(7): Pair@2 at LockFreeSet.add(LockFreeSet.kt:29)                                                      |                      |
+|                      |     compareAndSet(null,Node@4,false,false): false at LockFreeSet.add(LockFreeSet.kt:34)                        |                      |

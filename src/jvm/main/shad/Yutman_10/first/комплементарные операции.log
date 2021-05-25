@@ -1,0 +1,95 @@
+Invalid interleaving found, trying to minimize the scenario below:
+Execution scenario (parallel part):
+| add(1)    | add(3)    |
+| isEmpty() | remove(3) |
+|           | remove(1) |
+
+= The execution has hung, see the thread dump =
+Execution scenario (parallel part):
+| add(1)    | add(3)    |
+| isEmpty() | remove(3) |
+|           | remove(1) |
+
+Thread-1:
+	jdk.internal.misc.Unsafe.park(Native Method)
+	java.util.concurrent.locks.LockSupport.park(LockSupport.java:323)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor.getTask(FixedActiveThreadsExecutor.kt:181)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor.access$getTask(FixedActiveThreadsExecutor.kt:40)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:158)
+	java.lang.Thread.run(Thread.java:834)
+Thread-0:
+	java.lang.Thread.dumpThreads(Native Method)
+	java.lang.Thread.getAllStackTraces(Thread.java:1657)
+	org.jetbrains.kotlinx.lincheck.UtilsKt.collectThreadDump(Utils.kt:305)
+	org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedStrategy.checkLiveLockHappened(ManagedStrategy.kt:265)
+	org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedStrategy.newSwitchPoint(ManagedStrategy.kt:294)
+	org.jetbrains.kotlinx.lincheck.strategy.managed.ManagedStrategy.beforeAtomicMethodCall$lincheck(ManagedStrategy.kt:436)
+	shad.Yutman_10.first.LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)
+	shad.LincheckLockFreeSetTest.isEmpty(LincheckLockFreeSetTest.kt:30)
+	org.jetbrains.kotlinx.lincheck.runner.TestThreadExecution190.run(Unknown Source)
+	org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:163)
+	java.lang.Thread.run(Thread.java:834)
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                                                                                                                       | add(3)                                                                                        |
+|                                                                                                                       | remove(3)                                                                                     |
+|                                                                                                                       |   remove(3): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)            |
+|                                                                                                                       |     findKey(3): Pair@1 at LockFreeSetImpl.remove(LockFreeSetImpl.java:135)                    |
+|                                                                                                                       |       head.READ: Node@1 at LockFreeSetImpl.findKey(LockFreeSetImpl.java:98)                   |
+|                                                                                                                       |       getReference(): Node@2 at LockFreeSetImpl.findKey(LockFreeSetImpl.java:99)              |
+|                                                                                                                       |       switch                                                                                  |
+| add(1)                                                                                                                |                                                                                               |
+| isEmpty()                                                                                                             |                                                                                               |
+|   isEmpty(): threw ForcibleExecutionFinishException at LincheckLockFreeSetTest.isEmpty(LincheckLockFreeSetTest.kt:30) |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     switch                                                                                                            |                                                                                               |
+|                                                                                                                       |       get(int[]@1): null at LockFreeSetImpl.findKey(LockFreeSetImpl.java:104)                 |
+|                                                                                                                       |     getReference(): null at LockFreeSetImpl.remove(LockFreeSetImpl.java:139)                  |
+|                                                                                                                       |     compareAndSet(null,null,0,1): true at LockFreeSetImpl.remove(LockFreeSetImpl.java:140)    |
+|                                                                                                                       |     compareAndSet(Node@2,null,0,0): false at LockFreeSetImpl.remove(LockFreeSetImpl.java:141) |
+|                                                                                                                       | remove(1)                                                                                     |
+|                                                                                                                       |   thread is finished                                                                          |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                                                                               |
+|     getStamp(): 1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:170)                                                |                                                                                               |
+|     head.READ: Node@1 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                            |                                                                                               |
+|     getReference(): Node@2 at LockFreeSetImpl.isEmpty(LockFreeSetImpl.java:168)                                       |                                        

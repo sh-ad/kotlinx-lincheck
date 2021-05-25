@@ -1,0 +1,153 @@
+= The execution failed with an unexpected exception =
+Execution scenario (parallel part):
+| add(7) | add(4)      |
+| add(0) | remove(4)   |
+|        | contains(9) |
+
+java.lang.NullPointerException
+	at shad.Nedikov_7.first.LockFreeSet.add(LockFreeSet.java:42)
+	at shad.LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21)
+	at org.jetbrains.kotlinx.lincheck.runner.TestThreadExecution276.run(Unknown Source)
+	at org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:163)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+
+= The following interleaving leads to the error =
+Parallel part trace:
+| add(7)                                                                                             |                                                                                         |
+| add(0)                                                                                             |                                                                                         |
+|   add(0): threw NullPointerException at LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21) |                                                                                         |
+|     <init>(0) at LockFreeSet.add(LockFreeSet.java:37)                                              |                                                                                         |
+|     head.READ: SetNode@1 at LockFreeSet.add(LockFreeSet.java:38)                                   |                                                                                         |
+|     listSize.READ: AtomicInteger@1 at LockFreeSet.add(LockFreeSet.java:39)                         |                                                                                         |
+|     incrementAndGet(): 2 at LockFreeSet.add(LockFreeSet.java:39)                                   |                                                                                         |
+|     next.READ: AtomicReference@1 at LockFreeSet.add(LockFreeSet.java:40)                           |                                                                                         |
+|     compareAndSet(null,SetNode@2): false at LockFreeSet.add(LockFreeSet.java:40)                   |                                                                                         |
+|     next.READ: AtomicReference@1 at LockFreeSet.add(LockFreeSet.java:41)                           |                                                                                         |
+|     get(): SetNode@3 at LockFreeSet.add(LockFreeSet.java:41)                                       |                                                                                         |
+|     switch                                                                                         |                                                                                         |
+|                                                                                                    | add(4)                                                                                  |
+|                                                                                                    | remove(4)                                                                               |
+|                                                                                                    | contains(9)                                                                             |
+|                                                                                                    |   contains(9): false at LincheckLockFreeSetTest.contains(LincheckLockFreeSetTest.kt:27) |
+|                                                                                                    |     listSize.READ: AtomicInteger@1 at LockFreeSet.contains(LockFreeSet.java:68)         |
+|                                                                                                    |     get(): 3 at LockFreeSet.contains(LockFreeSet.java:68)                               |
+|                                                                                                    |     head.READ: SetNode@1 at LockFreeSet.contains(LockFreeSet.java:69)                   |
+|                                                                                                    |     next.READ: AtomicReference@1 at LockFreeSet.contains(LockFreeSet.java:69)           |
+|                                                                                                    |     get(): SetNode@3 at LockFreeSet.contains(LockFreeSet.java:69)                       |
+|                                                                                                    |     has(9): false at LockFreeSet.contains(LockFreeSet.java:71)                          |
+|                                                                                                    |       deleted.READ: AtomicBoolean@1 at LockFreeSet$SetNode.has(LockFreeSet.java:155)    |
+|                                                                                                    |       switch                                                                            |
+|     has(0): false at LockFreeSet.add(LockFreeSet.java:42)                                          |                                                                                         |
+|     next.READ: AtomicReference@2 at LockFreeSet.add(LockFreeSet.java:40)                           |                                                                                         |
+|     compareAndSet(null,SetNode@2): false at LockFreeSet.add(LockFreeSet.java:40)                   |                                                                                         |
+|     switch                                                                                         |                                                                                         |
+|                                                                                                    |       get(): false at LockFreeSet$SetNode.has(LockFreeSet.java:155)                     |
+|                                                                                                    |     nextNode(SetNode@3): null at LockFreeSet.contains(LockFreeSet.java:74)              |
+|                                                                                                    |   thread is finished                                                                    |
+|     next.READ: AtomicReference@2 at LockFreeSet.add(LockFreeSet.java:41)                           |                                                                                         |
+|     get(): null at LockFreeSet.add(LockFreeSet.java:41)                                            |                                                                                         |
+org.jetbrains.kotlinx.lincheck.LincheckAssertionError:
+= The execution failed with an unexpected exception =
+Execution scenario (parallel part):
+| add(7) | add(4)      |
+| add(0) | remove(4)   |
+|        | contains(9) |
+
+java.lang.NullPointerException
+	at shad.Nedikov_7.first.LockFreeSet.add(LockFreeSet.java:42)
+	at shad.LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21)
+	at org.jetbrains.kotlinx.lincheck.runner.TestThreadExecution276.run(Unknown Source)
+	at org.jetbrains.kotlinx.lincheck.runner.FixedActiveThreadsExecutor$testThreadRunnable$1.run(FixedActiveThreadsExecutor.kt:163)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+
+= The following interleaving leads to the error =
+Parallel part trace:
+| add(7)                                                                                             |                                                                                         |
+| add(0)                                                                                             |                                                                                         |
+|   add(0): threw NullPointerException at LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21) |                                                                                         |
+|     <init>(0) at LockFreeSet.add(LockFreeSet.java:37)                                              |                                                                                         |
+|     head.READ: SetNode@1 at LockFreeSet.add(LockFreeSet.java:38)                                   |                                                                                         |
+|     listSize.READ: AtomicInteger@1 at LockFreeSet.add(LockFreeSet.java:39)                         |                                                                                         |
+|     incrementAndGet(): 2 at LockFreeSet.add(LockFreeSet.java:39)                                   |                                                                                         |
+|     next.READ: AtomicReference@1 at LockFreeSet.add(LockFreeSet.java:40)                           |                                                                                         |
+|     compareAndSet(null,SetNode@2): false at LockFreeSet.add(LockFreeSet.java:40)                   |                                                                                         |
+|     next.READ: AtomicReference@1 at LockFreeSet.add(LockFreeSet.java:41)                           |                                                                                         |
+|     get(): SetNode@3 at LockFreeSet.add(LockFreeSet.java:41)                                       |                                                                                         |
+|     switch                                                                                         |                                                                                         |
+|                                                                                                    | add(4)                                                                                  |
+|                                                                                                    | remove(4)                                                                               |
+|                                                                                                    | contains(9)                                                                             |
+|                                                                                                    |   contains(9): false at LincheckLockFreeSetTest.contains(LincheckLockFreeSetTest.kt:27) |
+|                                                                                                    |     listSize.READ: AtomicInteger@1 at LockFreeSet.contains(LockFreeSet.java:68)         |
+|                                                                                                    |     get(): 3 at LockFreeSet.contains(LockFreeSet.java:68)                               |
+|                                                                                                    |     head.READ: SetNode@1 at LockFreeSet.contains(LockFreeSet.java:69)                   |
+|                                                                                                    |     next.READ: AtomicReference@1 at LockFreeSet.contains(LockFreeSet.java:69)           |
+|                                                                                                    |     get(): SetNode@3 at LockFreeSet.contains(LockFreeSet.java:69)                       |
+|                                                                                                    |     has(9): false at LockFreeSet.contains(LockFreeSet.java:71)                          |
+|                                                                                                    |       deleted.READ: AtomicBoolean@1 at LockFreeSet$SetNode.has(LockFreeSet.java:155)    |
+|                                                                                                    |       switch                                                                            |
+|     has(0): false at LockFreeSet.add(LockFreeSet.java:42)                                          |                                                                                         |
+|     next.READ: AtomicReference@2 at LockFreeSet.add(LockFreeSet.java:40)                           |                                                                                         |
+|     compareAndSet(null,SetNode@2): false at LockFreeSet.add(LockFreeSet.java:40)                   |                                                                                         |
+|     switch                                                                                         |                                                                                         |
+|                                                                                                    |       get(): false at LockFreeSet$SetNode.has(LockFreeSet.java:155)                     |
+|                                                                                                    |     nextNode(SetNode@3): null at LockFreeSet.contains(LockFreeSet.java:74)              |
+|                                                                                                    |   thread is finished                                                                    |
+|     next.READ: AtomicReference@2 at LockFreeSet.add(LockFreeSet.java:41)                           |                                                                                         |
+|     get(): null at LockFreeSet.add(LockFreeSet.java:41)                                            |                                                                                         |
+	at org.jetbrains.kotlinx.lincheck.LinChecker.check(LinChecker.kt:51)
+	at org.jetbrains.kotlinx.lincheck.LinChecker$Companion.check(LinChecker.kt:182)
+	at shad.LincheckLockFreeSetTest.runTest_1(LincheckLockFreeSetTest.kt:48)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+

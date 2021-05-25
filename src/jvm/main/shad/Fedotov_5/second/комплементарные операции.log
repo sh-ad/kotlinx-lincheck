@@ -1,0 +1,160 @@
+= Invalid execution results =
+Parallel part:
+| remove(2): true [-,1,1] | add(2):    true          | add(3):    true [-,1,-] |
+|                         | remove(1): false [-,1,-] | isEmpty(): true [-,1,1] |
+---
+values in "[..]" brackets indicate the number of completed operations
+in each of the parallel threads seen at the beginning of the current operation
+---
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                                                                                      | add(2): true                                                                         |                                                                                     |
+|                                                                                      | remove(1)                                                                            |                                                                                     |
+|                                                                                      |   remove(1): false at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)  |                                                                                     |
+|                                                                                      |     find(1): Pair@1 at LockFreeSet.remove(LockFreeSet.kt:65)                         |                                                                                     |
+|                                                                                      |       getReference(): Node@1 at LockFreeSet.find(LockFreeSet.kt:138)                 |                                                                                     |
+|                                                                                      |       getReference(): Node@2 at LockFreeSet.find(LockFreeSet.kt:140)                 |                                                                                     |
+|                                                                                      |       switch                                                                         |                                                                                     |
+|                                                                                      |                                                                                      | add(3): true                                                                        |
+|                                                                                      |                                                                                      | isEmpty()                                                                           |
+|                                                                                      |                                                                                      |   isEmpty(): true at LincheckLockFreeSetTest.isEmpty(LincheckLockFreeSetTest.kt:30) |
+|                                                                                      |                                                                                      |     makeSnapshot(): ArrayList@1 at LockFreeSet.isEmpty(LockFreeSet.kt:27)           |
+|                                                                                      |                                                                                      |       unSafeSnapshot(): ArrayList@2 at LockFreeSet.makeSnapshot(LockFreeSet.kt:162) |
+|                                                                                      |                                                                                      |         getReference(): Node@1 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:175)    |
+|                                                                                      |                                                                                      |         getStamp(): 2 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:180)             |
+|                                                                                      |                                                                                      |         getVersion(): 1 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:181)           |
+|                                                                                      |                                                                                      |         getReference(): Node@3 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:183)    |
+|                                                                                      |                                                                                      |         switch                                                                      |
+| remove(2)                                                                            |                                                                                      |                                                                                     |
+|   remove(2): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)   |                                                                                      |                                                                                     |
+|     find(2): Pair@2 at LockFreeSet.remove(LockFreeSet.kt:65)                         |                                                                                      |                                                                                     |
+|     getReference(): Node@3 at LockFreeSet.remove(LockFreeSet.kt:69)                  |                                                                                      |                                                                                     |
+|     getVersion(): 1 at LockFreeSet.remove(LockFreeSet.kt:70)                         |                                                                                      |                                                                                     |
+|     getVersion(): 2 at LockFreeSet.remove(LockFreeSet.kt:71)                         |                                                                                      |                                                                                     |
+|     compareAndSet(Node@3,Node@3,2,5): true at LockFreeSet.remove(LockFreeSet.kt:72)  |                                                                                      |                                                                                     |
+|     switch                                                                           |                                                                                      |                                                                                     |
+|                                                                                      |       getStamp(): 5 at LockFreeSet.find(LockFreeSet.kt:141)                          |                                                                                     |
+|                                                                                      |       getVersion(): 2 at LockFreeSet.find(LockFreeSet.kt:142)                        |                                                                                     |
+|                                                                                      |       compareAndSet(Node@1,Node@2,4,4): true at LockFreeSet.find(LockFreeSet.kt:143) |                                                                                     |
+|                                                                                      |       getReference(): null at LockFreeSet.find(LockFreeSet.kt:140)                   |                                                                                     |
+|                                                                                      |       getStamp(): 0 at LockFreeSet.find(LockFreeSet.kt:141)                          |                                                                                     |
+|                                                                                      |   result: false                                                                      |                                                                                     |
+|                                                                                      |   thread is finished                                                                 |                                                                                     |
+|                                                                                      |                                                                                      |         getStamp(): 0 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:180)             |
+|                                                                                      |                                                                                      |         getVersion(): 0 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:181)           |
+|                                                                                      |                                                                                      |         getReference(): Node@2 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:183)    |
+|                                                                                      |                                                                                      |       unSafeSnapshot(): ArrayList@1 at LockFreeSet.makeSnapshot(LockFreeSet.kt:164) |
+|                                                                                      |                                                                                      |       unSafeSnapshot(): ArrayList@1 at LockFreeSet.makeSnapshot(LockFreeSet.kt:164) |
+|                                                                                      |                                                                                      |   result: true                                                                      |
+|                                                                                      |                                                                                      |   thread is finished                                                                |
+|     compareAndSet(Node@1,Node@3,4,6): false at LockFreeSet.remove(LockFreeSet.kt:73) |                                                                                      |                                                                                     |
+|   result: true                                                                       |                                                                                      |                                                                                     |
+|   thread is finished                                                                 |                                                                                      |                                                                                     |
+org.jetbrains.kotlinx.lincheck.LincheckAssertionError:
+= Invalid execution results =
+Parallel part:
+| remove(2): true [-,1,1] | add(2):    true          | add(3):    true [-,1,-] |
+|                         | remove(1): false [-,1,-] | isEmpty(): true [-,1,1] |
+---
+values in "[..]" brackets indicate the number of completed operations
+in each of the parallel threads seen at the beginning of the current operation
+---
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                                                                                      | add(2): true                                                                         |                                                                                     |
+|                                                                                      | remove(1)                                                                            |                                                                                     |
+|                                                                                      |   remove(1): false at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)  |                                                                                     |
+|                                                                                      |     find(1): Pair@1 at LockFreeSet.remove(LockFreeSet.kt:65)                         |                                                                                     |
+|                                                                                      |       getReference(): Node@1 at LockFreeSet.find(LockFreeSet.kt:138)                 |                                                                                     |
+|                                                                                      |       getReference(): Node@2 at LockFreeSet.find(LockFreeSet.kt:140)                 |                                                                                     |
+|                                                                                      |       switch                                                                         |                                                                                     |
+|                                                                                      |                                                                                      | add(3): true                                                                        |
+|                                                                                      |                                                                                      | isEmpty()                                                                           |
+|                                                                                      |                                                                                      |   isEmpty(): true at LincheckLockFreeSetTest.isEmpty(LincheckLockFreeSetTest.kt:30) |
+|                                                                                      |                                                                                      |     makeSnapshot(): ArrayList@1 at LockFreeSet.isEmpty(LockFreeSet.kt:27)           |
+|                                                                                      |                                                                                      |       unSafeSnapshot(): ArrayList@2 at LockFreeSet.makeSnapshot(LockFreeSet.kt:162) |
+|                                                                                      |                                                                                      |         getReference(): Node@1 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:175)    |
+|                                                                                      |                                                                                      |         getStamp(): 2 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:180)             |
+|                                                                                      |                                                                                      |         getVersion(): 1 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:181)           |
+|                                                                                      |                                                                                      |         getReference(): Node@3 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:183)    |
+|                                                                                      |                                                                                      |         switch                                                                      |
+| remove(2)                                                                            |                                                                                      |                                                                                     |
+|   remove(2): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)   |                                                                                      |                                                                                     |
+|     find(2): Pair@2 at LockFreeSet.remove(LockFreeSet.kt:65)                         |                                                                                      |                                                                                     |
+|     getReference(): Node@3 at LockFreeSet.remove(LockFreeSet.kt:69)                  |                                                                                      |                                                                                     |
+|     getVersion(): 1 at LockFreeSet.remove(LockFreeSet.kt:70)                         |                                                                                      |                                                                                     |
+|     getVersion(): 2 at LockFreeSet.remove(LockFreeSet.kt:71)                         |                                                                                      |                                                                                     |
+|     compareAndSet(Node@3,Node@3,2,5): true at LockFreeSet.remove(LockFreeSet.kt:72)  |                                                                                      |                                                                                     |
+|     switch                                                                           |                                                                                      |                                                                                     |
+|                                                                                      |       getStamp(): 5 at LockFreeSet.find(LockFreeSet.kt:141)                          |                                                                                     |
+|                                                                                      |       getVersion(): 2 at LockFreeSet.find(LockFreeSet.kt:142)                        |                                                                                     |
+|                                                                                      |       compareAndSet(Node@1,Node@2,4,4): true at LockFreeSet.find(LockFreeSet.kt:143) |                                                                                     |
+|                                                                                      |       getReference(): null at LockFreeSet.find(LockFreeSet.kt:140)                   |                                                                                     |
+|                                                                                      |       getStamp(): 0 at LockFreeSet.find(LockFreeSet.kt:141)                          |                                                                                     |
+|                                                                                      |   result: false                                                                      |                                                                                     |
+|                                                                                      |   thread is finished                                                                 |                                                                                     |
+|                                                                                      |                                                                                      |         getStamp(): 0 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:180)             |
+|                                                                                      |                                                                                      |         getVersion(): 0 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:181)           |
+|                                                                                      |                                                                                      |         getReference(): Node@2 at LockFreeSet.unSafeSnapshot(LockFreeSet.kt:183)    |
+|                                                                                      |                                                                                      |       unSafeSnapshot(): ArrayList@1 at LockFreeSet.makeSnapshot(LockFreeSet.kt:164) |
+|                                                                                      |                                                                                      |       unSafeSnapshot(): ArrayList@1 at LockFreeSet.makeSnapshot(LockFreeSet.kt:164) |
+|                                                                                      |                                                                                      |   result: true                                                                      |
+|                                                                                      |                                                                                      |   thread is finished                                                                |
+|     compareAndSet(Node@1,Node@3,4,6): false at LockFreeSet.remove(LockFreeSet.kt:73) |                                                                                      |                                                                                     |
+|   result: true                                                                       |                                                                                      |                                                                                     |
+|   thread is finished                                                                 |                                                                                      |                                                                                     |
+	at org.jetbrains.kotlinx.lincheck.LinChecker.check(LinChecker.kt:51)
+	at org.jetbrains.kotlinx.lincheck.LinChecker$Companion.check(LinChecker.kt:182)
+	at shad.LincheckLockFreeSetTest.runTest_1(LincheckLockFreeSetTest.kt:48)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)

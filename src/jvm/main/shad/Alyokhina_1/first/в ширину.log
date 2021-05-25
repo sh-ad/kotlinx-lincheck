@@ -1,0 +1,32 @@
+Invalid interleaving found, trying to minimize the scenario below:
+Execution scenario (parallel part):
+| iterator() | add(4)    |
+| isEmpty()  | remove(4) |
+
+= Invalid execution results =
+Parallel part:
+| iterator(): []    [-,1] | add(4):    true       |
+| isEmpty():  false [1,1] | remove(4): true [-,1] |
+---
+values in "[..]" brackets indicate the number of completed operations
+in each of the parallel threads seen at the beginning of the current operation
+---
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                      | add(4): true                                                                                         |
+|                      | remove(4)                                                                                            |
+|                      |   remove(4): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)                   |
+|                      |     find(4): SimpleEntry@1 at LockFreeSetImpl.remove(LockFreeSetImpl.java:32)                        |
+|                      |     access$100(Node@1): AtomicMarkableReference@1 at LockFreeSetImpl.remove(LockFreeSetImpl.java:36) |
+|                      |     getReference(): null at LockFreeSetImpl.remove(LockFreeSetImpl.java:36)                          |
+|                      |     access$100(Node@1): AtomicMarkableReference@1 at LockFreeSetImpl.remove(LockFreeSetImpl.java:37) |
+|                      |     compareAndSet(null,null,false,true): true at LockFreeSetImpl.remove(LockFreeSetImpl.java:37)     |
+|                      |     switch                                                                                           |
+| iterator(): []       |                                                                                                      |
+| isEmpty(): false     |                                                                                                      |
+|   thread is finished |                                                                                                      |
+|                      |     access$100(Node@2): AtomicMarkableReference@2 at LockFreeSetImpl.remove(LockFreeSetImpl.java:38) |
+|                      |     compareAndSet(Node@1,null,false,false): true at LockFreeSetImpl.remove(LockFreeSetImpl.java:38)  |
+|                      |   result: true                                                                                       |
+|                      |   thread is finished                                                                                 |

@@ -1,0 +1,162 @@
+= Invalid execution results =
+Parallel part:
+| remove(1): true [-,2] | add(1):      true        |
+|                       | add(2):      true  [-,1] |
+|                       | add(1):      true  [-,2] |
+|                       | contains(1): false [-,3] |
+---
+values in "[..]" brackets indicate the number of completed operations
+in each of the parallel threads seen at the beginning of the current operation
+---
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                                                                                                          | add(1): true                                                                           |
+|                                                                                                          | add(2): true                                                                           |
+|                                                                                                          | add(1)                                                                                 |
+|                                                                                                          |   add(1): true at LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21)           |
+|                                                                                                          |     <init>(null,false) at LockFreeSet.add(LockFreeSet.kt:46)                           |
+|                                                                                                          |     find(1): Pair@1 at LockFreeSet.add(LockFreeSet.kt:49)                              |
+|                                                                                                          |       getReference(): Node@1 at LockFreeSet.find(LockFreeSet.kt:112)                   |
+|                                                                                                          |       getReference(): Node@2 at LockFreeSet.find(LockFreeSet.kt:113)                   |
+|                                                                                                          |       isRemoved(Node@2): false at LockFreeSet.find(LockFreeSet.kt:116)                 |
+|                                                                                                          |       switch                                                                           |
+| remove(1)                                                                                                |                                                                                        |
+|   remove(1): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)                       |                                                                                        |
+|     find(1): Pair@2 at LockFreeSet.remove(LockFreeSet.kt:63)                                             |                                                                                        |
+|     getReference(): Node@3 at LockFreeSet.remove(LockFreeSet.kt:68)                                      |                                                                                        |
+|     compareAndSet(Node@3,Node@3,false,true): true at LockFreeSet.remove(LockFreeSet.kt:69)               |                                                                                        |
+|     physicallyRemove(Node@1,Node@2) at LockFreeSet.remove(LockFreeSet.kt:70)                             |                                                                                        |
+|       getReference(): Node@3 at LockFreeSet.physicallyRemove(LockFreeSet.kt:136)                         |                                                                                        |
+|       isRemoved(Node@3): false at LockFreeSet.physicallyRemove(LockFreeSet.kt:137)                       |                                                                                        |
+|       switch                                                                                             |                                                                                        |
+|                                                                                                          |       isRemoved(Node@2): true at LockFreeSet.find(LockFreeSet.kt:119)                  |
+|                                                                                                          |       getReference(): Node@3 at LockFreeSet.find(LockFreeSet.kt:123)                   |
+|                                                                                                          |       isRemoved(Node@3): false at LockFreeSet.find(LockFreeSet.kt:116)                 |
+|                                                                                                          |       isRemoved(Node@3): false at LockFreeSet.find(LockFreeSet.kt:119)                 |
+|                                                                                                          |       getReference(): null at LockFreeSet.find(LockFreeSet.kt:123)                     |
+|                                                                                                          |     compareAndSet(null,Node@4,false,false): true at LockFreeSet.add(LockFreeSet.kt:54) |
+|                                                                                                          |   result: true                                                                         |
+|                                                                                                          | contains(1): false                                                                     |
+|                                                                                                          |   thread is finished                                                                   |
+|       compareAndSet(Node@2,Node@3,false,false): true at LockFreeSet.physicallyRemove(LockFreeSet.kt:139) |                                                                                        |
+|   result: true                                                                                           |                                                                                        |
+|   thread is finished                                                                                     |                                                                                        |
+org.jetbrains.kotlinx.lincheck.LincheckAssertionError:
+= Invalid execution results =
+Parallel part:
+| remove(1): true [-,2] | add(1):      true        |
+|                       | add(2):      true  [-,1] |
+|                       | add(1):      true  [-,2] |
+|                       | contains(1): false [-,3] |
+---
+values in "[..]" brackets indicate the number of completed operations
+in each of the parallel threads seen at the beginning of the current operation
+---
+
+= The following interleaving leads to the error =
+Parallel part trace:
+|                                                                                                          | add(1): true                                                                           |
+|                                                                                                          | add(2): true                                                                           |
+|                                                                                                          | add(1)                                                                                 |
+|                                                                                                          |   add(1): true at LincheckLockFreeSetTest.add(LincheckLockFreeSetTest.kt:21)           |
+|                                                                                                          |     <init>(null,false) at LockFreeSet.add(LockFreeSet.kt:46)                           |
+|                                                                                                          |     find(1): Pair@1 at LockFreeSet.add(LockFreeSet.kt:49)                              |
+|                                                                                                          |       getReference(): Node@1 at LockFreeSet.find(LockFreeSet.kt:112)                   |
+|                                                                                                          |       getReference(): Node@2 at LockFreeSet.find(LockFreeSet.kt:113)                   |
+|                                                                                                          |       isRemoved(Node@2): false at LockFreeSet.find(LockFreeSet.kt:116)                 |
+|                                                                                                          |       switch                                                                           |
+| remove(1)                                                                                                |                                                                                        |
+|   remove(1): true at LincheckLockFreeSetTest.remove(LincheckLockFreeSetTest.kt:24)                       |                                                                                        |
+|     find(1): Pair@2 at LockFreeSet.remove(LockFreeSet.kt:63)                                             |                                                                                        |
+|     getReference(): Node@3 at LockFreeSet.remove(LockFreeSet.kt:68)                                      |                                                                                        |
+|     compareAndSet(Node@3,Node@3,false,true): true at LockFreeSet.remove(LockFreeSet.kt:69)               |                                                                                        |
+|     physicallyRemove(Node@1,Node@2) at LockFreeSet.remove(LockFreeSet.kt:70)                             |                                                                                        |
+|       getReference(): Node@3 at LockFreeSet.physicallyRemove(LockFreeSet.kt:136)                         |                                                                                        |
+|       isRemoved(Node@3): false at LockFreeSet.physicallyRemove(LockFreeSet.kt:137)                       |                                                                                        |
+|       switch                                                                                             |                                                                                        |
+|                                                                                                          |       isRemoved(Node@2): true at LockFreeSet.find(LockFreeSet.kt:119)                  |
+|                                                                                                          |       getReference(): Node@3 at LockFreeSet.find(LockFreeSet.kt:123)                   |
+|                                                                                                          |       isRemoved(Node@3): false at LockFreeSet.find(LockFreeSet.kt:116)                 |
+|                                                                                                          |       isRemoved(Node@3): false at LockFreeSet.find(LockFreeSet.kt:119)                 |
+|                                                                                                          |       getReference(): null at LockFreeSet.find(LockFreeSet.kt:123)                     |
+|                                                                                                          |     compareAndSet(null,Node@4,false,false): true at LockFreeSet.add(LockFreeSet.kt:54) |
+|                                                                                                          |   result: true                                                                         |
+|                                                                                                          | contains(1): false                                                                     |
+|                                                                                                          |   thread is finished                                                                   |
+|       compareAndSet(Node@2,Node@3,false,false): true at LockFreeSet.physicallyRemove(LockFreeSet.kt:139) |                                                                                        |
+|   result: true                                                                                           |                                                                                        |
+|   thread is finished                                                                                     |                                                                                        |
+	at org.jetbrains.kotlinx.lincheck.LinChecker.check(LinChecker.kt:51)
+	at org.jetbrains.kotlinx.lincheck.LinChecker$Companion.check(LinChecker.kt:182)
+	at shad.LincheckLockFreeSetTest.runTest_1(LincheckLockFreeSetTest.kt:48)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:59)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:56)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.BlockJUnit4ClassRunner$1.evaluate(BlockJUnit4ClassRunner.java:100)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:366)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:103)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:63)
+	at org.junit.runners.ParentRunner$4.run(ParentRunner.java:331)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:79)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:329)
+	at org.junit.runners.ParentRunner.access$100(ParentRunner.java:66)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:293)
+	at org.junit.runners.ParentRunner$3.evaluate(ParentRunner.java:306)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:413)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.runTestClass(JUnitTestClassExecutor.java:110)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:58)
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecutor.execute(JUnitTestClassExecutor.java:38)
+	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:62)
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:51)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:94)
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source)
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:119)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:182)
+	at org.gradle.internal.remote.internal.hub.MessageHubBackedObjectConnection$DispatchWrapper.dispatch(MessageHubBackedObjectConnection.java:164)
+	at org.gradle.internal.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:414)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.ManagedExecutorImpl$1.run(ManagedExecutorImpl.java:48)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at org.gradle.internal.concurrent.ThreadFactoryImpl$ManagedThreadRunnable.run(ThreadFactoryImpl.java:56)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+
+shad.LincheckLockFreeSetTest[jvm] > runTest_1[jvm] FAILED
+    org.jetbrains.kotlinx.lincheck.LincheckAssertionError at LincheckLockFreeSetTest.kt:48
+1 test completed, 1 failed
+> Task :jvmTest FAILED
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':jvmTest'.
+> There were failing tests. See the report at: file:///C:/Users/sh_ad/IdeaProjects/sh-ad/kotlinx-lincheck/build/reports/tests/jvmTest/index.html
+* Try:
+Run with --stacktrace option to get the stack trace. Run with --info or --debug option to get more log output. Run with --scan to get full insights.
+* Get more help at https://help.gradle.org
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 7.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/6.6.1/userguide/command_line_interface.html#sec:command_line_warnings
+BUILD FAILED in 1m 12s
+8 actionable tasks: 4 executed, 4 up-to-date
+

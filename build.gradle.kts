@@ -1,5 +1,6 @@
 import org.gradle.jvm.tasks.Jar
 
+
 // atomicfu
 buildscript {
     val atomicfuVersion: String by project
@@ -88,8 +89,11 @@ tasks {
 
     withType<Test> {
         maxParallelForks = 1
-        jvmArgs("--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED",
-                "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED")
+        jvmArgs(
+            "--add-opens", "java.base/jdk.internal.misc=ALL-UNNAMED",
+            "--add-exports", "java.base/jdk.internal.util=ALL-UNNAMED",
+            "-Xms2g", "-Xmx6g"
+        )
     }
 
     withType<Jar> {
